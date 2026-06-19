@@ -9,9 +9,10 @@ import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { BrandedPlaceholder } from "@/components/ui/BrandedPlaceholder";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getPostBySlug, getPostSlugs } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getPostSlugs } from "@/lib/blog";
 import { formatDate } from "@/lib/utils";
 import { articleSchema, pageMetadata } from "@/lib/seo";
+import { Button } from "@/components/ui/Button";
 
 export const revalidate = 3600;
 
@@ -63,6 +64,12 @@ export default async function BlogPostPage({
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const others = (await getAllPosts()).filter((p) => p.slug !== post.slug);
+  const related = [
+    ...others.filter((p) => p.category === post.category),
+    ...others.filter((p) => p.category !== post.category),
+  ].slice(0, 3);
+
   return (
     <>
       <JsonLd
@@ -112,6 +119,21 @@ export default async function BlogPostPage({
             />
           </div>
 
+          {/* CTA boutique */}
+          <aside className="mt-14 flex flex-col items-start gap-4 rounded-2xl bg-cream/60 p-8 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-display text-xl text-ink">
+                Envie d'illuminer votre intérieur&nbsp;?
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                Découvrez nos luminaires artisanaux, imprimés en 3D et fabriqués en France.
+              </p>
+            </div>
+            <Button href="/boutique" className="shrink-0">
+              Voir la boutique
+            </Button>
+          </aside>
+
           <footer className="mt-14 border-t border-line pt-8">
             <Link
               href="/blog"
@@ -121,6 +143,30 @@ export default async function BlogPostPage({
             </Link>
           </footer>
         </article>
+
+        {/* Articles liés */}
+        {related.length > 0 && (
+          <section className="mx-auto mt-16 max-w-5xl border-t border-line pt-12">
+            <h2 className="font-display text-2xl text-ink">À lire aussi</h2>
+            <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-3">
+              {related.map((p, i) => (
+                <article key={p.slug} className="group">
+                  <Link href={`/blog/${p.slug}`}>
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-cream">
+                      <div className="h-full w-full transition-transform duration-700 group-hover:scale-105">
+                        <BrandedPlaceholder category="APPLIQUE" seed={i + 2} />
+                      </div>
+                    </div>
+                    <p className="mt-3 text-xs text-brass-dark">{p.category}</p>
+                    <h3 className="mt-1 font-display text-lg leading-snug text-ink group-hover:text-brass-dark">
+                      {p.title}
+                    </h3>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </Container>
     </>
   );

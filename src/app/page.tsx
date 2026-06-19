@@ -21,6 +21,8 @@ import {
   getFeaturedProducts,
   getTestimonials,
 } from "@/lib/products";
+import { getAllPosts } from "@/lib/blog";
+import { formatDate } from "@/lib/utils";
 
 const homeFaqs = [
   {
@@ -46,11 +48,13 @@ const homeFaqs = [
 ];
 
 export default async function HomePage() {
-  const [featured, collections, testimonials] = await Promise.all([
+  const [featured, collections, testimonials, posts] = await Promise.all([
     getFeaturedProducts(4),
     getCollections(),
     getTestimonials(3),
+    getAllPosts(),
   ]);
+  const latestPosts = posts.slice(0, 3);
 
   return (
     <>
@@ -296,6 +300,51 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* ── Journal ──────────────────────────────────────────────────────── */}
+      {latestPosts.length > 0 && (
+        <section className="bg-cream/60 py-20">
+          <Container>
+            <div className="flex items-end justify-between gap-6">
+              <SectionHeading
+                eyebrow="Le journal"
+                title="Inspiration & conseils déco"
+                intro="Bien choisir, marier et sublimer vos luminaires : nos guides pour un intérieur lumineux."
+              />
+              <Link
+                href="/blog"
+                className="hidden shrink-0 items-center gap-2 text-sm font-medium text-ink hover:text-brass-dark sm:inline-flex"
+              >
+                Tous les articles <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="mt-10 grid gap-x-6 gap-y-10 md:grid-cols-3">
+              {latestPosts.map((post, i) => (
+                <Reveal key={post.slug} delay={i * 0.05}>
+                  <article className="group">
+                    <Link href={`/blog/${post.slug}`}>
+                      <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-cream">
+                        <div className="h-full w-full transition-transform duration-700 group-hover:scale-105">
+                          <BrandedPlaceholder category="SUSPENSION" seed={i + 3} />
+                        </div>
+                      </div>
+                      <div className="mt-4 flex items-center gap-2 text-sm text-muted">
+                        <span className="text-brass-dark">{post.category}</span>
+                        <span>·</span>
+                        <span>{formatDate(post.date)}</span>
+                      </div>
+                      <h3 className="mt-2 font-display text-xl leading-snug text-ink group-hover:text-brass-dark">
+                        {post.title}
+                      </h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-muted">{post.excerpt}</p>
+                    </Link>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* ── CTA final ────────────────────────────────────────────────────── */}
       <section className="pb-24">
