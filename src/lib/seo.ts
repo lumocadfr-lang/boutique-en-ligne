@@ -23,7 +23,8 @@ export function pageMetadata({
   keywords,
 }: PageMetaInput): Metadata {
   const url = absoluteUrl(path);
-  const ogImage = image ?? "/og/lumocad-default.jpg";
+  // Si aucune image n'est fournie, la convention de fichier `opengraph-image`
+  // (générée dynamiquement) prend le relais automatiquement.
   return {
     title,
     description,
@@ -37,13 +38,13 @@ export function pageMetadata({
       description,
       siteName: site.name,
       locale: site.locale,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: title }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [ogImage],
+      ...(image ? { images: [image] } : {}),
     },
   };
 }
