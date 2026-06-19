@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "magic": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@dev/magic@latest"
+      ],
+      "env": {}
+    }
+  }
+}
