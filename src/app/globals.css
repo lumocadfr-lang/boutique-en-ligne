@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LumoCAD — Design System
+   Minimalisme éditorial chaleureux · esprit mobilier & décoration premium
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Couleurs — palette chaude haut de gamme */
+  --color-paper: #faf7f2; /* fond principal (papier chaud) */
+  --color-cream: #f2ece2; /* surfaces secondaires */
+  --color-sand: #ece3d5; /* surfaces / hover doux */
+  --color-line: #e7ded0; /* bordures */
+  --color-ink: #1a1714; /* texte principal / sections sombres */
+  --color-ink-soft: #3d372f; /* texte titre secondaire */
+  --color-muted: #6b6258; /* texte atténué */
+  --color-brass: #b68a4e; /* accent / CTA (laiton) */
+  --color-brass-dark: #976f37; /* accent hover */
+  --color-amber: #e8a94b; /* lueur chaude */
+
+  /* Typographie */
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Rayons */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+
+  /* Conteneur */
+  --breakpoint-3xl: 96rem;
+
+  /* Ombres chaudes subtiles */
+  --shadow-soft: 0 1px 2px rgba(26, 23, 20, 0.04), 0 8px 24px rgba(26, 23, 20, 0.06);
+  --shadow-card: 0 1px 3px rgba(26, 23, 20, 0.05), 0 12px 40px rgba(26, 23, 20, 0.08);
+
+  /* Animations */
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.8s ease both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "kern", "liga", "calt";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-brass);
+  color: #fff;
+}
+
+/* Titres éditoriaux */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Lien souligné élégant */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+/* Focus visible cohérent (accessibilité) */
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Eyebrow / surtitre */
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Respecte la préférence de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Typographie de contenu (articles de blog, pages éditoriales) */
+.prose-lumo {
+  color: var(--color-ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.prose-lumo h2 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin: 2.5rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+.prose-lumo h3 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+}
+.prose-lumo p {
+  margin: 0 0 1.25rem;
+}
+.prose-lumo a {
+  color: var(--color-brass-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-lumo ul,
+.prose-lumo ol {
+  margin: 0 0 1.25rem 1.25rem;
+}
+.prose-lumo li {
+  margin-bottom: 0.5rem;
+}
+.prose-lumo ul {
+  list-style: disc;
+}
+.prose-lumo ol {
+  list-style: decimal;
+}
+.prose-lumo blockquote {
+  border-left: 3px solid var(--color-brass);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-ink);
+  font-size: 1.25rem;
+}
+.prose-lumo img {
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+.prose-lumo strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
