@@ -5,7 +5,7 @@
   "description": "LumoCAD — Luminaires artisanaux design imprimés en 3D, fabriqués en France. Boutique e-commerce premium.",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
