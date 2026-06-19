@@ -1,22 +1,41 @@
 /**
- * Règle le `provider` du datasource dans prisma/schema.prisma selon
- * la variable d'environnement DATABASE_PROVIDER (défaut : postgresql).
+ * Règle le `provider` du datasource dans prisma/schema.prisma.
  *
  * Prisma n'autorise pas env() dans `provider` ; on réécrit donc la ligne
- * avant `prisma generate`. Cela garde le projet portable :
- *   - local : DATABASE_PROVIDER=sqlite
- *   - prod  : DATABASE_PROVIDER=postgresql (défaut)
+ * avant `prisma generate`. Le provider est déterminé ainsi :
+ *   1. variable DATABASE_PROVIDER si présente, sinon
+ *   2. déduit de DATABASE_URL : "file:" → sqlite, sinon postgresql.
+ *
+ * On charge .env manuellement car ce script tourne hors du contexte Prisma.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const provider = process.env.DATABASE_PROVIDER || "postgresql";
+// ── Chargement minimal de .env (sans dépendance) ───────────────────────────
+const envPath = resolve(process.cwd(), ".env");
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, "utf8").split(/\r?\n/)) {
+    const m = line.match(/^\s*([\w.]+)\s*=\s*(.*)\s*$/);
+    if (m && !process.env[m[1]]) {
+      process.env[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
+    }
+  }
+}
+
+// ── Détermination du provider ──────────────────────────────────────────────
+let provider = process.env.DATABASE_PROVIDER;
+if (!provider) {
+  const url = process.env.DATABASE_URL || "";
+  provider = url.startsWith("file:") ? "sqlite" : "postgresql";
+}
+
 const allowed = ["postgresql", "sqlite", "mysql"];
 if (!allowed.includes(provider)) {
   console.error(`DATABASE_PROVIDER invalide : ${provider} (attendu : ${allowed.join(", ")})`);
   process.exit(1);
 }
 
+// ── Réécriture du schéma ───────────────────────────────────────────────────
 const schemaPath = resolve(process.cwd(), "prisma/schema.prisma");
 const schema = readFileSync(schemaPath, "utf8");
 const updated = schema.replace(
